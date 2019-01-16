@@ -1,0 +1,1 @@
+# Siddi - A minimalistic abstraction for event tracking/analytic API
