@@ -1,0 +1,31 @@
+{
+  "name": "siddi",
+  "version": "1.0.0",
+  "description": "A convenient event tracker API which sends events to multiple consumers",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "prettier --print-width 120 --single-quote --trailing-comma es5 --write \"src/**/*.ts\"",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch --coverage",
+    "prepublish": "npm run lint && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.cgxapps.com/Cinergix/siddi"
+  },
+  "keywords": [
+    "Event tracker",
+    "Event API",
+    "Analytics API"
+  ],
+  "author": "Niroshana Madusanka <nkmadusanka@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^23.3.12",
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3",
+    "ts-jest": "^23.10.5",
+    "typescript": "~3.1.1"
+  }
+}
