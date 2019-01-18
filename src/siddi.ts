@@ -2,17 +2,21 @@ import { Consumers } from './consumers';
 
 /**
  * Event consumer configuration object.
- * It is not mandatory to have an event configuration for a consumer.
- * Granular control of the consumer can be achieved via this configuration.
- * If a configuration does not exist for a given consumer, all tracked
- * events sent to the consumer without any restrictions. For certain consumers we can limit
- * the event digestion, and allow and deny properties does what they implies.
- * Allow/deny property can have,
+ * It is mandatory to have an event configuration for a consumer, but deny property is optional.
+ * Consumer configuration having just a consumer name implies that all events will be sent to that consumer.
+ * Granular control of the consumer can be achieved via deny configuration.
+ * For certain consumers we can limit the event digestion, using the deny property we can define which event should not be sent to
+ * the consumer.
+ * Deny property can have,
  * - all: affects all events
  * - specific events by namespace which only affects what is matching
  * ie: If we deny 'proton.user.' namespace, all events starting with that namespace will get affected
+ * Usage:
+ * 1. { name: 'mixpanel' } --> send all events to mixpanel
+ * 2. { name: 'mixpanel', deny: [ 'all' ] } --> Do not send any events to mixpanel
+ * 3. { name: 'mixpanel', deny: [ 'site.login.', 'proton.user.' ] } --> Do not send site.login.* and proton.user.* events to mixpanel
  */
-export type ConsumerConfig = { name: string; allow?: string[]; deny?: string[] };
+export type ConsumerConfig = { name: string; deny?: string[] };
 
 /**
  * Complete event consumer configuration object
@@ -41,7 +45,7 @@ export class Siddi {
    * Constructor
    * @param eventConfig Event configuration object
    */
-  public constructor(private eventConfig: EventConfig = {}) {
+  public constructor(private eventConfig: EventConfig) {
     this.user = { id: '', properties: undefined };
   }
 
@@ -89,41 +93,27 @@ export class Siddi {
 
   /**
    * Check whether the event should be sent to the given consumer.
+   * 1. { name: 'mixpanel' } --> send all events to mixpanel
+   * 2. { name: 'mixpanel', deny: [ 'all' ] } --> Do not send any events to mixpanel
+   * 3. { name: 'mixpanel', deny: [ 'site.login.', 'proton.user.' ] } --> Do not send site.login.* and proton.user.* events to mixpanel
    * @param consumer target event consumer
    * @param eventName event name
    */
   private shouldTrack(consumer: string, eventName: string): boolean {
-    const consumerConfig = this.getConsumerConfig(consumer).pop();
+    const consumerConfig = this.getConsumerConfig(consumer);
 
-    // Check all allowed
-    const allAllowed =
-      consumerConfig && consumerConfig.allow && consumerConfig.allow.filter(c => c === 'all').length > 0;
-    if (allAllowed) {
-      return true;
+    // No such consumer is defined on the configuration
+    if ( !consumerConfig ) {
+        return false;
     }
 
-    // Check all denied
-    const allDenied = consumerConfig && consumerConfig.deny && consumerConfig.deny.filter(c => c === 'all').length > 0;
-    if (allDenied) {
-      return false;
+    const denyOptions = consumerConfig.deny;
+
+    if ( denyOptions && ( denyOptions.filter(c => c === 'all').length > 0 || denyOptions.filter(c => eventName.indexOf(c) > -1).length > 0 )) {
+        return false;
     }
 
-    // Check specifically allowed
-    const specAllowed =
-      consumerConfig && consumerConfig.allow && consumerConfig.allow.filter(c => eventName.indexOf(c) > -1).length > 0;
-    if (specAllowed) {
-      return true;
-    }
-
-    // Check specifically denied
-    const specDenied =
-      consumerConfig && consumerConfig.deny && consumerConfig.deny.filter(c => eventName.indexOf(c) > -1).length > 0;
-    if (specDenied) {
-      return false;
-    }
-
-    // If nothing matches, deny
-    return false;
+    return true;
   }
 
   /**
@@ -131,13 +121,13 @@ export class Siddi {
    * it is assumed that full tracking is allowed for that consumer.
    * @param consumer target consumer
    */
-  private getConsumerConfig(consumer: string): ConsumerConfig[] {
+  private getConsumerConfig(consumer: string): ConsumerConfig | undefined {
     if (this.eventConfig.consumers) {
       const consumers = this.eventConfig.consumers.filter(conf => conf.name === consumer);
       if (consumers && consumers.length > 0) {
-        return consumers;
+        return consumers.pop();
       }
     }
-    return [{ name: consumer, allow: ['all'] }];
+    return undefined;
   }
 }
