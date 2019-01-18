@@ -57,7 +57,7 @@ export class Siddi {
    */
   public identify(userId: string, userProperties: any): void {
     this.user.id = userId;
-    this.user.properties = userProperties;
+    this.user.properties = userProperties ? userProperties : {};
   }
 
   /**
@@ -80,13 +80,15 @@ export class Siddi {
           }
         }
 
-        if (this.user.id && !this.consumerStatus[consumer.name].identified) {
-          // Identify the user
-          consumer.identify(this.user.id, this.user.properties);
-          this.consumerStatus[consumer.name].identified = true;
+        if ( this.consumerStatus[ consumer.name ].enabled ) {
+            if (this.user.id && !this.consumerStatus[consumer.name].identified) {
+              // Identify the user
+              consumer.identify(this.user.id, this.user.properties);
+              this.consumerStatus[consumer.name].identified = true;
+            }
+    
+            consumer.track(eventName, eventProperties);
         }
-
-        consumer.track(eventName, eventProperties);
       }
     });
   }
