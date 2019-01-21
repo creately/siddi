@@ -1,12 +1,23 @@
-export type ConsumerConfig = {
-  name: string;
-  test: Function;
-  identify: Function;
-  track: Function;
+/**
+ * Siddi event consumer
+ * test: Function which returnes a boolean based on consumer is initialized and active
+ * track: Tracking function implementation based on consumer API
+ * identify: User identification function implementation based on consumer API
+ */
+export type ConsumerConfiguration = {
+  [name: string]: {
+    test: Function;
+    identify: Function;
+    track: Function;
+  };
 };
 
+/**
+ * We need this shit, typescript blah!
+ */
 declare global {
   interface Window {
+    siddi: any;
     mixpanel: any;
     heap: any;
     amplitude: any;
@@ -14,9 +25,11 @@ declare global {
   }
 }
 
-export const Consumers: ConsumerConfig[] = [
-  {
-    name: 'mixpanel',
+/**
+ * All consumer implementations
+ */
+export const Consumers: ConsumerConfiguration = {
+  mixpanel: {
     test: () => window.mixpanel && window.mixpanel.__loaded,
     identify: (userId: string, userProperties: any) => {
       window.mixpanel.identify(userId);
@@ -28,8 +41,7 @@ export const Consumers: ConsumerConfig[] = [
       window.mixpanel.track(eventName, eventProperties);
     },
   },
-  {
-    name: 'heap',
+  heap: {
     test: () => window.heap && window.heap.track,
     identify: (userId: string, userProperties: any) => {
       window.heap.identify(userId);
@@ -41,8 +53,7 @@ export const Consumers: ConsumerConfig[] = [
       window.heap.track(eventName, eventProperties);
     },
   },
-  {
-    name: 'amplitude',
+  amplitude: {
     test: () => window.amplitude && window.amplitude.options,
     identify: (userId: string, userProperties: any) => {
       window.amplitude.getInstance().setUserId(userId);
@@ -54,9 +65,9 @@ export const Consumers: ConsumerConfig[] = [
       window.amplitude.getInstance().logEvent(eventName, eventProperties);
     },
   },
-  {
-    name: 'zendesk-connect',
-    test: () => window.outbound && window.outbound.identify && window.outbound.track,
+  outbound: {
+    // This is Zendesk Connect
+    test: () => window.outbound && window.outbound.track,
     identify: (userId: string, userProperties: any) => {
       window.outbound.identify(userId, userProperties);
     },
@@ -64,4 +75,4 @@ export const Consumers: ConsumerConfig[] = [
       window.outbound.track(eventName, eventProperties);
     },
   },
-];
+};
