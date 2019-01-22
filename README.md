@@ -7,7 +7,7 @@ Obviously, every event consumer API is different from each other and managing mu
 This was inspired from [event-layer](https://github.com/kidGodzilla/event-layer) project but adds capability to control the event digestion by the consumers. We are not sending events to every consumer we support, or we have loaded. We send the events to the ones we specifically allow and we have a granular control over it.
 
 ## How?
-Load the library a regular npm module, create a Siddi instance with your event consumer configuration, and use.
+Load the library as a regular npm module, create a Siddi instance with your event consumer configuration, and rock!
 
 ### APIs available
 * track( eventName, eventProperties ): void
@@ -48,7 +48,7 @@ This is optional, default value is `deny: []`. If no value is specified, this do
 { name: 'consumer', allow: [ '*' ] } // Send all events to the consumer
 { name: 'consumer', allow: [ 'user.login.' ]  } // All events matching user.login.* will be sent to the consumer
 { name: 'consumer', deny: [ '*' ] } // No events will be sent to the consumer
-{ name: 'consumer', allow: [ 'user.login.' ], deny: [ 'user.login.failed' ] } // Send all events which match the namespace user.login.* but don't send user.login.failed event.
+{ name: 'consumer', allow: [ 'user.login.' ], deny: [ 'user.login.failed' ] } // Send all events which matches the namespace user.login.* but don't send user.login.failed event.
 ```
 
-Configuration allows us to configure the consumers what ever the way we want, it up to you to decide.
+Configuration allows us to configure the consumers whatever the way we want, it up to you to decide.

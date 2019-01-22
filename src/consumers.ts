@@ -1,5 +1,5 @@
 /**
- * Siddi event consumer
+ * Siddi event consumer configuration object
  * test: Function which returnes a boolean based on consumer is initialized and active
  * track: Tracking function implementation based on consumer API
  * identify: User identification function implementation based on consumer API
