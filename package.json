@@ -2,9 +2,9 @@
   "name": "@creately/siddi",
   "version": "1.0.0",
   "description": "A convenient event tracker API which sends events to multiple consumers",
-  "main": "dist/index.js",
+  "main": "dist/siddi.js",
   "scripts": {
-    "build": "webpack",
+    "build": "tsc",
     "lint": "prettier --print-width 120 --single-quote --trailing-comma es5 --write \"src/**/*.ts\"",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage",
