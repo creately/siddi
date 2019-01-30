@@ -7,7 +7,9 @@ describe('Siddi', () => {
     __loaded: true,
     identify: () => {},
     track: () => {},
-    set: () => {},
+    people: {
+        set: () => {},
+    }
   };
 
   const heap = {
