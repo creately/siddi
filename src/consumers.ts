@@ -34,7 +34,7 @@ export const Consumers: ConsumerConfiguration = {
     identify: (userId: string, userProperties: any) => {
       window.mixpanel.identify(userId);
       if (userProperties) {
-        window.mixpanel.set(userProperties);
+        window.mixpanel.people.set(userProperties);
       }
     },
     track: (eventName: string, eventProperties: any) => {

@@ -58,7 +58,7 @@ export class Siddi {
    */
   public identify(userId: string, userProperties?: any): void {
     this.user.id = userId;
-    this.user.properties = userProperties ? userProperties : {};
+    this.user.properties = userProperties;
   }
 
   /**

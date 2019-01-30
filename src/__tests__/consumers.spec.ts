@@ -5,7 +5,9 @@ describe('Consumers', () => {
     __loaded: true,
     identify: () => {},
     track: () => {},
-    set: () => {},
+    people: {
+        set: () => {},
+    }
   };
 
   const heap = {
@@ -50,7 +52,7 @@ describe('Consumers', () => {
     describe('identify', () => {
       beforeEach(() => {
         jest.spyOn(mixpanel, 'identify');
-        jest.spyOn(mixpanel, 'set');
+        jest.spyOn(mixpanel.people, 'set');
       });
       it('should register the given user', () => {
         Consumers.mixpanel.identify('mock-user-id');
@@ -59,7 +61,7 @@ describe('Consumers', () => {
       it('should set user properties if given', () => {
         Consumers.mixpanel.identify('mock-user-id', { paid: 'no' });
         expect(mixpanel.identify).toBeCalledWith('mock-user-id');
-        expect(mixpanel.set).toBeCalledWith({ paid: 'no' });
+        expect(mixpanel.people.set).toBeCalledWith({ paid: 'no' });
       });
     });
     describe('track', () => {
