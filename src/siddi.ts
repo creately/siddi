@@ -93,7 +93,10 @@ export class Siddi {
             Consumers[config.name].identify(this.user.id, this.user.properties);
             this.consumerStatus[config.name].identified = true;
           }
-          Consumers[config.name].track(eventName, eventProperties);
+          new Promise(resolve => {
+            Consumers[config.name].track(eventName, eventProperties);
+            resolve();
+          });
         }
       }
     });
