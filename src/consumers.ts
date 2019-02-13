@@ -22,6 +22,7 @@ declare global {
     heap: any;
     amplitude: any;
     outbound: any;
+    ga: any;
   }
 }
 
@@ -73,6 +74,19 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.outbound.track(eventName, eventProperties);
+    },
+  },
+  googleAnalytics: {
+    test: () => !!window.ga,
+    identify: (userId: string, userProperties: any = {}) => {
+      userProperties.userId = userId;
+      window.ga('set', userProperties);
+    },
+    track: (eventName: string, eventProperties: any = {}) => {
+      eventProperties.eventCategory = eventProperties.eventCategory ? eventProperties.eventCategory : 'All';
+      eventProperties.eventAction = eventName;
+      eventProperties.hitType = 'event';
+      window.ga('send', eventProperties);
     },
   },
 };

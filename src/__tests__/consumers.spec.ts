@@ -32,6 +32,8 @@ describe('Consumers', () => {
     track: () => {},
   };
 
+  const ga = () => {};
+
   describe('mixpanel', () => {
     beforeEach(() => {
       window.mixpanel = mixpanel;
@@ -193,6 +195,54 @@ describe('Consumers', () => {
       it('should send given tracking data', () => {
         Consumers.outbound.track('event.name', { prop: 'a prop' });
         expect(outbound.track).toBeCalledWith('event.name', { prop: 'a prop' });
+      });
+    });
+    describe('googleAnalytics', () => {
+      describe('test', () => {
+        it('should return false if ga is not loaded', () => {
+          expect(Consumers.googleAnalytics.test()).toBeFalsy();
+        });
+        it('should true if ga is loaded', () => {
+          window.ga = ga;
+          expect(Consumers.googleAnalytics.test()).toBeTruthy();
+        });
+      });
+      describe('identify', () => {
+        beforeEach(() => {
+          window.ga = ga;
+          spyOn(window, 'ga');
+        });
+        it('should register given user', () => {
+          Consumers.googleAnalytics.identify('user-id');
+          expect(window.ga).toHaveBeenCalledWith('set', { userId: 'user-id' });
+        });
+        it('should not modify any user properties', () => {
+          Consumers.googleAnalytics.identify('user-id', { plan: 'trial' });
+          expect(window.ga).toHaveBeenCalledWith('set', { userId: 'user-id', plan: 'trial' });
+        });
+      });
+      describe('track', () => {
+        beforeEach(() => {
+          window.ga = ga;
+          spyOn(window, 'ga');
+        });
+        it('should use All as the event category if not provided in the event properties', () => {
+          Consumers.googleAnalytics.track('dog.bark');
+          expect(window.ga).toHaveBeenCalledWith('send', {
+            eventCategory: 'All',
+            eventAction: 'dog.bark',
+            hitType: 'event',
+          });
+        });
+        it('should use the given event category on the given event properties', () => {
+          Consumers.googleAnalytics.track('cat.run', { speed: 'light', eventCategory: 'war' });
+          expect(window.ga).toHaveBeenCalledWith('send', {
+            eventCategory: 'war',
+            eventAction: 'cat.run',
+            hitType: 'event',
+            speed: 'light',
+          });
+        });
       });
     });
   });
