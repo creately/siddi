@@ -1,6 +1,6 @@
 {
   "name": "@creately/siddi",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A convenient event tracker API which sends events to multiple consumers",
   "main": "dist/siddi.js",
   "scripts": {
@@ -8,12 +8,15 @@
     "lint": "prettier --print-width 120 --single-quote --trailing-comma es5 --write \"src/**/*.ts\"",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage",
-    "prepublish": "npm run lint && npm run build"
+    "prepublish": "rimraf dist && npm run lint && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/creately/siddi"
   },
+  "files": [
+    "/dist"
+  ],
   "keywords": [
     "Event tracker",
     "Event API",
@@ -25,6 +28,7 @@
     "@types/jest": "^23.3.12",
     "jest": "^23.6.0",
     "prettier": "^1.15.3",
+    "rimraf": "^2.6.3",
     "ts-jest": "^23.10.5",
     "ts-loader": "^5.3.3",
     "typescript": "~3.1.1",
