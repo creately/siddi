@@ -20,5 +20,8 @@
     "typeRoots": [ "node_modules/@types" ],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+  "exclude": [
+    "**/__tests__/*"
+  ]
 }

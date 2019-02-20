@@ -13,7 +13,7 @@ export type ConsumerConfiguration = {
 };
 
 /**
- * We need this shit, typescript blah!
+ * Declare what we will add or reference on the browser global.
  */
 declare global {
   interface Window {
