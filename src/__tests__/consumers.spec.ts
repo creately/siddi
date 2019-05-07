@@ -3,23 +3,23 @@ import { Consumers } from '../consumers';
 describe('Consumers', () => {
   const mixpanel = {
     __loaded: true,
-    identify: () => {},
-    track: () => {},
+    identify: () => { },
+    track: () => { },
     people: {
-      set: () => {},
+      set: () => { },
     },
   };
 
   const heap = {
-    track: () => {},
-    identify: () => {},
-    addUserProperties: () => {},
+    track: () => { },
+    identify: () => { },
+    addUserProperties: () => { },
   };
 
   const amplitudeInstance = {
-    setUserId: () => {},
-    setUserProperties: () => {},
-    logEvent: () => {},
+    setUserId: () => { },
+    setUserProperties: () => { },
+    logEvent: () => { },
   };
 
   const amplitude = {
@@ -28,11 +28,13 @@ describe('Consumers', () => {
   };
 
   const outbound = {
-    identify: () => {},
-    track: () => {},
+    identify: () => { },
+    track: () => { },
   };
 
-  const ga = () => {};
+  const snowplow = () => { };
+
+  const ga = () => { };
 
   describe('mixpanel', () => {
     beforeEach(() => {
@@ -110,7 +112,7 @@ describe('Consumers', () => {
     });
     describe('track', () => {
       beforeEach(() => {
-        heap.track = () => {};
+        heap.track = () => { };
         jest.spyOn(heap, 'track');
       });
       it('should send given tracking data', () => {
@@ -161,6 +163,45 @@ describe('Consumers', () => {
       });
     });
   });
+  describe('snowplow', () => {
+    beforeEach(() => {
+      window.snowplow = snowplow;
+      window.snowplowschema = 'iglu://schema.create.ly';
+    });
+    describe('test', () => {
+      it('should return true if loaded', () => {
+        expect(Consumers.snowplow.test()).toBeTruthy();
+      });
+      it('should return false if not loaded', () => {
+        delete window.snowplow;
+        expect(Consumers.snowplow.test()).toBeFalsy();
+      });
+      it('should return false if schema is not set', () => {
+        delete window.snowplowschema;
+        expect(Consumers.snowplow.test()).toBeFalsy();
+      });
+    });
+    describe('identify', () => {
+      it('should do nothing', () => {
+        expect(Consumers.snowplow.identify()).toBeUndefined();
+      });
+    });
+    describe('track', () => {
+      beforeEach(() => {
+        jest.spyOn(window, 'snowplow');
+      });
+      it('should send given tracking data', () => {
+        Consumers.snowplow.track('event.name', { prop: 'a prop' });
+        expect(window.snowplow).toBeCalledWith('trackSelfDescribingEvent', {
+          schema: 'iglu://schema.create.ly',
+          data: {
+            prop: 'a prop',
+            event: 'event.name',
+          },
+        });
+      });
+    });
+  });
   describe('zendesk-connect', () => {
     beforeEach(() => {
       window.outbound = outbound;
@@ -189,7 +230,7 @@ describe('Consumers', () => {
     });
     describe('track', () => {
       beforeEach(() => {
-        outbound.track = () => {};
+        outbound.track = () => { };
         jest.spyOn(outbound, 'track');
       });
       it('should send given tracking data', () => {
