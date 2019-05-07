@@ -94,7 +94,7 @@ export const Consumers: ConsumerConfiguration = {
   snowplow: {
     // TODO: Improvements to use multiple schemas
     test: () => !!window.snowplow && !!window.snowplowschema,
-    identify: (userId: string, userProperties: any = {}) => {
+    identify: () => {
       // Currently no user identification is available
     },
     track: (eventName: string, eventProperties: any = {}) => {
