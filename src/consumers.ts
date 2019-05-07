@@ -23,6 +23,8 @@ declare global {
     amplitude: any;
     outbound: any;
     ga: any;
+    snowplow: any;
+    snowplowschema: string;//Variable which holds the schema path
   }
 }
 
@@ -89,4 +91,19 @@ export const Consumers: ConsumerConfiguration = {
       window.ga('send', eventProperties);
     },
   },
+  snowplow: {
+    // TODO: Improvements to use multiple schemas
+    test: () => !!window.snowplow && !!window.snowplowschema,
+    identify: (userId: string, userProperties: any = {}) => {
+      // Currently no user identification is available
+    },
+    track: (eventName: string, eventProperties: any = {}) => {
+      eventProperties.event = eventName;
+      const selfDescribingEvent = {
+        schema: window.snowplowschema,
+        data: eventProperties
+      } 
+      window.snowplow( 'trackSelfDescribingEvent', selfDescribingEvent );
+    },
+  }
 };
