@@ -24,7 +24,7 @@ declare global {
     outbound: any;
     ga: any;
     snowplow: any;
-    snowplowschema: string;//Variable which holds the schema path
+    snowplowschema: string; //Variable which holds the schema path
   }
 }
 
@@ -101,9 +101,9 @@ export const Consumers: ConsumerConfiguration = {
       eventProperties.event = eventName;
       const selfDescribingEvent = {
         schema: window.snowplowschema,
-        data: eventProperties
-      } 
-      window.snowplow( 'trackSelfDescribingEvent', selfDescribingEvent );
+        data: eventProperties,
+      };
+      window.snowplow('trackSelfDescribingEvent', selfDescribingEvent);
     },
-  }
+  },
 };
