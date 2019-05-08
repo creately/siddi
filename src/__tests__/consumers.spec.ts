@@ -3,23 +3,23 @@ import { Consumers } from '../consumers';
 describe('Consumers', () => {
   const mixpanel = {
     __loaded: true,
-    identify: () => { },
-    track: () => { },
+    identify: () => {},
+    track: () => {},
     people: {
-      set: () => { },
+      set: () => {},
     },
   };
 
   const heap = {
-    track: () => { },
-    identify: () => { },
-    addUserProperties: () => { },
+    track: () => {},
+    identify: () => {},
+    addUserProperties: () => {},
   };
 
   const amplitudeInstance = {
-    setUserId: () => { },
-    setUserProperties: () => { },
-    logEvent: () => { },
+    setUserId: () => {},
+    setUserProperties: () => {},
+    logEvent: () => {},
   };
 
   const amplitude = {
@@ -28,13 +28,13 @@ describe('Consumers', () => {
   };
 
   const outbound = {
-    identify: () => { },
-    track: () => { },
+    identify: () => {},
+    track: () => {},
   };
 
-  const snowplow = () => { };
+  const snowplow = () => {};
 
-  const ga = () => { };
+  const ga = () => {};
 
   describe('mixpanel', () => {
     beforeEach(() => {
@@ -112,7 +112,7 @@ describe('Consumers', () => {
     });
     describe('track', () => {
       beforeEach(() => {
-        heap.track = () => { };
+        heap.track = () => {};
         jest.spyOn(heap, 'track');
       });
       it('should send given tracking data', () => {
@@ -230,7 +230,7 @@ describe('Consumers', () => {
     });
     describe('track', () => {
       beforeEach(() => {
-        outbound.track = () => { };
+        outbound.track = () => {};
         jest.spyOn(outbound, 'track');
       });
       it('should send given tracking data', () => {

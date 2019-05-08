@@ -114,7 +114,7 @@ export class Siddi {
    * @param eventName event name
    */
   private shouldTrack(consumerConfig: EventConfiguration, eventName: string): boolean {
-    const config = Object.assign(this.defaultConsumerRule, consumerConfig);
+    const config = Object.assign({}, this.defaultConsumerRule, consumerConfig);
 
     const denyOptions = config.deny;
     const allowOptions = config.allow;
