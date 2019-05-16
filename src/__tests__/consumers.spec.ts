@@ -182,8 +182,16 @@ describe('Consumers', () => {
       });
     });
     describe('identify', () => {
-      it('should do nothing', () => {
-        expect(Consumers.snowplow.identify()).toBeUndefined();
+      beforeEach(() => {
+        jest.spyOn(window, 'snowplow');
+      });
+      it('should call setUserId event', () => {
+        Consumers.snowplow.identify( 'vetorRajaId');
+        expect( window.snowplow ).toHaveBeenCalledWith( 'setUserId', 'vetorRajaId' );
+      });
+      it('should call setUserId event with additional parameter', () => {
+        Consumers.snowplow.identify( 'vetorRajaId', { loc: 'dd' } );
+        expect( window.snowplow ).toHaveBeenCalledWith( 'setUserId', 'vetorRajaId' );
       });
     });
     describe('track', () => {
@@ -196,6 +204,15 @@ describe('Consumers', () => {
           schema: 'iglu://schema.create.ly',
           data: {
             prop: 'a prop',
+            event: 'event.name',
+          },
+        });
+      });
+      it('should send given tracking data without additional parameter', () => {
+        Consumers.snowplow.track('event.name');
+        expect(window.snowplow).toBeCalledWith('trackSelfDescribingEvent', {
+          schema: 'iglu://schema.create.ly',
+          data: {
             event: 'event.name',
           },
         });
