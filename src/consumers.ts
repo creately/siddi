@@ -25,6 +25,7 @@ declare global {
     ga: any;
     snowplow: any;
     snowplowschema: string; //Variable which holds the schema path
+    sendinblue: any;
   }
 }
 
@@ -94,8 +95,8 @@ export const Consumers: ConsumerConfiguration = {
   snowplow: {
     // TODO: Improvements to use multiple schemas
     test: () => !!window.snowplow && !!window.snowplowschema,
-    identify: ( userId: string, _: any = {} ) => {
-      window.snowplow( 'setUserId', userId );
+    identify: (userId: string, _: any = {}) => {
+      window.snowplow('setUserId', userId);
     },
     track: (eventName: string, eventProperties: any = {}) => {
       eventProperties.event = eventName;
@@ -104,6 +105,15 @@ export const Consumers: ConsumerConfiguration = {
         data: eventProperties,
       };
       window.snowplow('trackSelfDescribingEvent', selfDescribingEvent);
+    },
+  },
+  sendinblue: {
+    test: () => window.sendinblue,
+    identify: (userId: string, userProperties: any) => {
+      window.sendinblue.identify(userId, userProperties);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.sendinblue.track(eventName, eventProperties);
     },
   },
 };
