@@ -36,6 +36,11 @@ describe('Consumers', () => {
 
   const ga = () => {};
 
+  const sendinblue = {
+    test: () => {},
+    track: () => {},
+    identify: () => {},
+  };
   describe('mixpanel', () => {
     beforeEach(() => {
       window.mixpanel = mixpanel;
@@ -186,12 +191,12 @@ describe('Consumers', () => {
         jest.spyOn(window, 'snowplow');
       });
       it('should call setUserId event', () => {
-        Consumers.snowplow.identify( 'vetorRajaId');
-        expect( window.snowplow ).toHaveBeenCalledWith( 'setUserId', 'vetorRajaId' );
+        Consumers.snowplow.identify('vetorRajaId');
+        expect(window.snowplow).toHaveBeenCalledWith('setUserId', 'vetorRajaId');
       });
       it('should call setUserId event with additional parameter', () => {
-        Consumers.snowplow.identify( 'vetorRajaId', { loc: 'dd' } );
-        expect( window.snowplow ).toHaveBeenCalledWith( 'setUserId', 'vetorRajaId' );
+        Consumers.snowplow.identify('vetorRajaId', { loc: 'dd' });
+        expect(window.snowplow).toHaveBeenCalledWith('setUserId', 'vetorRajaId');
       });
     });
     describe('track', () => {
@@ -300,6 +305,38 @@ describe('Consumers', () => {
             hitType: 'event',
             speed: 'light',
           });
+        });
+      });
+    });
+    describe('sendinblue', () => {
+      beforeEach(() => {
+        window.sendinblue = sendinblue;
+      });
+      describe('test', () => {
+        it('should return true if loaded', () => {
+          expect(Consumers.sendinblue.test()).toBeTruthy();
+        });
+        it('should return false if not loaded', () => {
+          delete window.sendinblue;
+          expect(Consumers.sendinblue.test()).toBeFalsy();
+        });
+      });
+      describe('identify', () => {
+        beforeEach(() => {
+          jest.spyOn(sendinblue, 'identify');
+        });
+        it('should register the given user', () => {
+          Consumers.sendinblue.identify('mock-user-id', { userProperty: 'user property' });
+          expect(sendinblue.identify).toBeCalledWith('mock-user-id', { userProperty: 'user property' });
+        });
+      });
+      describe('track', () => {
+        beforeEach(() => {
+          jest.spyOn(sendinblue, 'track');
+        });
+        it('should send given tracking data', () => {
+          Consumers.sendinblue.track('event.name', { prop: 'a prop' });
+          expect(sendinblue.track).toBeCalledWith('event.name', { prop: 'a prop' });
         });
       });
     });
