@@ -18,6 +18,7 @@ import { Consumers } from './consumers';
  * 4. { name: 'mixpanel', allow: [ 'site.' ] } --> All site events will be sent
  * 5. { name: 'mixpanel', allow: [ '*' ], deny: [ 'site.login.', 'app.user.' ] } --> Do not send site.login.* and app.user.* events
  * 6. { name: 'mixpanel', deny: [ 'user.collab.' ] } --> Do not send user.collab.* events
+ * 7. { name: 'mixpanel', denyParameters: [ {eventId: 'user.login.failed', parameters: ['location'] } ] } --> Do not send location parameter with user.login.failed event
  */
 export type EventConfiguration = { name: string; allow?: string[]; deny?: string[]; denyParameters?: any };
 
