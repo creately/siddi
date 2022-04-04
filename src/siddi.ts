@@ -70,7 +70,7 @@ export class Siddi {
   public track(eventName: string, eventProperties: any): void {
     this.consumerConfig.forEach(config => {
       // Assign event properties to a new obeject
-      var filteredEventProperties = Object.assign({}, eventProperties);
+      let filteredEventProperties = Object.assign({}, eventProperties);
       // consumer name must exist, else ignore it
       if (config.name && Consumers[config.name] && this.shouldTrack(config, eventName)) {
         // If no consumer status tracking exist, check it first
