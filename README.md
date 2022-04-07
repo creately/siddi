@@ -42,6 +42,9 @@ This is optional, default value is `allow: [ '*' ]`. If no value is specified, e
 
 This is optional, default value is `deny: []`. If no value is specified, this doesn't affect anything but the decision to send the events will be based on the evaluation of other options provided. If both allow and deny options exist, evaluation of the deny options will determine if the events will be sent to the consumer of not.
 
+* denyParameters
+This is an optional parameter. You can use denyParameters to exclude sending particular event parameter for an event. Specify an array of objects. Each object should have eventId and parameters as an array.
+
 ```
 { name: 'consumer' } // Send all events to the consumer
 { name: 'consumer', allow: [] } // No events will be sent to the consumer
@@ -49,6 +52,7 @@ This is optional, default value is `deny: []`. If no value is specified, this do
 { name: 'consumer', allow: [ 'user.login.' ]  } // All events matching user.login.* will be sent to the consumer
 { name: 'consumer', deny: [ '*' ] } // No events will be sent to the consumer
 { name: 'consumer', allow: [ 'user.login.' ], deny: [ 'user.login.failed' ] } // Send all events which matches the namespace user.login.* but don't send user.login.failed event.
+{ name: 'consumer', allow: [ '*' ], denyParameters: [ { eventId: 'user.login.failed', parameters: [ 'location' ] } ] } // Exclude sending location parameter with user.login.failed event to the consumer.
 ```
 
 Configuration allows us to configure the consumers whatever the way we want, it up to you to decide.

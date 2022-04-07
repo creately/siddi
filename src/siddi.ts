@@ -18,8 +18,9 @@ import { Consumers } from './consumers';
  * 4. { name: 'mixpanel', allow: [ 'site.' ] } --> All site events will be sent
  * 5. { name: 'mixpanel', allow: [ '*' ], deny: [ 'site.login.', 'app.user.' ] } --> Do not send site.login.* and app.user.* events
  * 6. { name: 'mixpanel', deny: [ 'user.collab.' ] } --> Do not send user.collab.* events
+ * 7. { name: 'mixpanel', denyParameters: [ {eventId: 'user.login.failed', parameters: ['location'] } ] } --> Do not send location parameter with user.login.failed event
  */
-export type EventConfiguration = { name: string; allow?: string[]; deny?: string[] };
+export type EventConfiguration = { name: string; allow?: string[]; deny?: string[]; denyParameters?: any };
 
 /**
  * Siddi - An abstract event consumer
@@ -68,6 +69,8 @@ export class Siddi {
    */
   public track(eventName: string, eventProperties: any): void {
     this.consumerConfig.forEach(config => {
+      // Assign event properties to a new obeject
+      let filteredEventProperties = Object.assign({}, eventProperties);
       // consumer name must exist, else ignore it
       if (config.name && Consumers[config.name] && this.shouldTrack(config, eventName)) {
         // If no consumer status tracking exist, check it first
@@ -85,6 +88,18 @@ export class Siddi {
           }
         }
 
+        // Exclude sending event parameters for particular event
+        // when those defined in denyParameters config
+        if(eventProperties && config.denyParameters) {
+          config.denyParameters.some(function(element: any, index: number) {
+              if(element.eventId === eventName) {
+                config.denyParameters[index].parameters.forEach(function(property: string) {
+                  delete filteredEventProperties[property];
+                });
+              }
+          });
+        }
+
         // Track the event only if consumer is in enabled status
         // We do not send tracking data to consumers knowingly that they would fail
         if (this.consumerStatus[config.name].enabled) {
@@ -94,7 +109,7 @@ export class Siddi {
             this.consumerStatus[config.name].identified = true;
           }
           new Promise(resolve => {
-            Consumers[config.name].track(eventName, eventProperties);
+            Consumers[config.name].track(eventName, filteredEventProperties);
             resolve();
           });
         }

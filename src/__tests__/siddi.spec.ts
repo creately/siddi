@@ -136,5 +136,21 @@ describe('Siddi', () => {
       siddi.track('unitTest.track', { run: 'last' });
       expect(mixpanelTrackSpy).toBeCalledWith('unitTest.track', { run: 'last' });
     });
+    it('should not send event parameters with tracking data when that event parameters defined in denyParameters', () => {
+      mixpanelTestSpy.mockReturnValue(true);
+      siddi = new Siddi([{ name: 'mixpanel', allow: ['*'], denyParameters: [{eventId:'unitTest.track', parameters:['where', 'why']}] }]);
+      siddi.track('unitTest.track', { run: 'last', where: 'mac', why: 'denny' });
+      expect(mixpanelTestSpy).toBeCalled();
+      expect(mixpanelIdentifySpy).not.toBeCalled();
+      expect(mixpanelTrackSpy).toBeCalledWith('unitTest.track', { run: 'last' });
+    });
+    it('should only exclude event parameters which are defined in denyParameters', () => {
+      mixpanelTestSpy.mockReturnValue(true);
+      siddi = new Siddi([{ name: 'mixpanel', allow: ['*'], denyParameters: [{eventId:'unitTest.track', parameters:['param']}] }]);
+      siddi.track('unitTest.run', { run: 'last', param: 'value' });
+      expect(mixpanelTestSpy).toBeCalled();
+      expect(mixpanelIdentifySpy).not.toBeCalled();
+      expect(mixpanelTrackSpy).toBeCalledWith('unitTest.run', { run: 'last', param: 'value' });
+    });
   });
 });
