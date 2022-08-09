@@ -90,13 +90,13 @@ export class Siddi {
 
         // Exclude sending event parameters for particular event
         // when those defined in denyParameters config
-        if(eventProperties && config.denyParameters) {
+        if (eventProperties && config.denyParameters) {
           config.denyParameters.some(function(element: any, index: number) {
-              if(element.eventId === eventName) {
-                config.denyParameters[index].parameters.forEach(function(property: string) {
-                  delete filteredEventProperties[property];
-                });
-              }
+            if (element.eventId === eventName) {
+              config.denyParameters[index].parameters.forEach(function(property: string) {
+                delete filteredEventProperties[property];
+              });
+            }
           });
         }
 

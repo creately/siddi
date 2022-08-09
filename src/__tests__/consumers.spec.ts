@@ -41,6 +41,13 @@ describe('Consumers', () => {
     track: () => {},
     identify: () => {},
   };
+
+  const ga4 = {
+    test: () => {},
+    track: () => {},
+    identify: () => {},
+  };
+
   describe('mixpanel', () => {
     beforeEach(() => {
       window.mixpanel = mixpanel;
@@ -337,6 +344,41 @@ describe('Consumers', () => {
         it('should send given tracking data', () => {
           Consumers.sendinblue.track('event.name', { prop: 'a prop' });
           expect(sendinblue.track).toBeCalledWith('event.name', { prop: 'a prop' });
+        });
+      });
+    });
+    describe('ga4', () => {
+      describe('test', () => {
+        it('should return false if ga4 is not loaded', () => {
+          expect(Consumers.ga4.test()).toBeFalsy();
+        });
+        it('should true if ga4 is loaded', () => {
+          window.gtag = ga4;
+          expect(Consumers.ga4.test()).toBeTruthy();
+        });
+      });
+      describe('identify', () => {
+        beforeEach(() => {
+          window.gtag = ga4;
+          spyOn(window, 'gtag');
+        });
+        it('should register given user', () => {
+          Consumers.ga4.identify('user-id');
+          expect(window.gtag).toHaveBeenCalledWith('set', 'user_properties', { user_id: 'user-id' });
+        });
+        it('should not modify any user properties', () => {
+          Consumers.ga4.identify('user-id', { plan: 'trial' });
+          expect(window.gtag).toHaveBeenCalledWith('set', 'user_properties', { user_id: 'user-id', plan: 'trial' });
+        });
+      });
+      describe('track', () => {
+        beforeEach(() => {
+          window.gtag = ga4;
+          spyOn(window, 'gtag');
+        });
+        it('should send given tracking data', () => {
+          Consumers.ga4.track('event.name', { prop: 'a prop' });
+          expect(window.gtag).toHaveBeenCalledWith('event', 'event.name', { prop: 'a prop' });
         });
       });
     });
