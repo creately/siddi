@@ -26,6 +26,7 @@ declare global {
     snowplow: any;
     snowplowschema: string; //Variable which holds the schema path
     sendinblue: any;
+    gtag: any;
   }
 }
 
@@ -114,6 +115,16 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.sendinblue.track(eventName, eventProperties);
+    },
+  },
+  ga4: {
+    test: () => !!window.gtag,
+    identify: (userId: string, userProperties: any = {}) => {
+      userProperties.user_id = userId;
+      window.gtag('set', 'user_properties', userProperties);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.gtag('event', eventName, eventProperties);
     },
   },
 };
