@@ -49,9 +49,6 @@ describe('Consumers', () => {
   };
 
   const indicative = {
-    test: () => {},
-    track: () => {},
-    identify: () => {},
     setUniqueID: () => {},
     buildEvent: () => {},
   };
