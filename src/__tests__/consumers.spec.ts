@@ -48,6 +48,14 @@ describe('Consumers', () => {
     identify: () => {},
   };
 
+  const indicative = {
+    test: () => {},
+    track: () => {},
+    identify: () => {},
+    setUniqueID: () => {},
+    buildEvent: () => {},
+  };
+
   describe('mixpanel', () => {
     beforeEach(() => {
       window.mixpanel = mixpanel;
@@ -379,6 +387,41 @@ describe('Consumers', () => {
         it('should send given tracking data', () => {
           Consumers.ga4.track('event.name', { prop: 'a prop' });
           expect(window.gtag).toHaveBeenCalledWith('event', 'event.name', { prop: 'a prop' });
+        });
+      });
+    });
+    describe('indicative', () => {
+      describe('test', () => {
+        it('should return false if indicative is not loaded', () => {
+          expect(Consumers.indicative.test()).toBeFalsy();
+        });
+        it('should true if indicative is loaded', () => {
+          window.Indicative = indicative;
+          expect(Consumers.indicative.test()).toBeTruthy();
+        });
+      });
+      describe('identify', () => {
+        beforeEach(() => {
+          window.Indicative = indicative;
+          jest.spyOn(indicative, 'setUniqueID');
+        });
+        it('should register given user', () => {
+          Consumers.indicative.identify('user-id');
+          expect(indicative.setUniqueID).toHaveBeenCalledWith('user-id', true);
+        });
+        it('should not modify any user properties', () => {
+          Consumers.indicative.identify('user-id', { plan: 'trial' });
+          expect(window.Indicative.setUniqueID).toHaveBeenCalledWith('user-id', true);
+        });
+      });
+      describe('track', () => {
+        beforeEach(() => {
+          window.Indicative = indicative;
+          jest.spyOn(indicative, 'buildEvent');
+        });
+        it('should send given tracking data', () => {
+          Consumers.indicative.track('event.name', { prop: 'a prop' });
+          expect(window.Indicative.buildEvent).toHaveBeenCalledWith('event.name', { prop: 'a prop' });
         });
       });
     });

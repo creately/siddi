@@ -27,6 +27,7 @@ declare global {
     snowplowschema: string; //Variable which holds the schema path
     sendinblue: any;
     gtag: any;
+    Indicative: any;
   }
 }
 
@@ -125,6 +126,15 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.gtag('event', eventName, eventProperties);
+    },
+  },
+  indicative: {
+    test: () => window.Indicative,
+    identify: (userId: string, _: any = {}) => {
+      window.Indicative.setUniqueID(userId, true);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.Indicative.buildEvent(eventName, eventProperties);
     },
   },
 };
