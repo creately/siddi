@@ -1,6 +1,6 @@
 {
   "name": "@creately/siddi",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "A convenient event tracker API which sends events to multiple consumers",
   "main": "dist/siddi.js",
   "scripts": {
