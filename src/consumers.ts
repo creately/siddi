@@ -125,7 +125,7 @@ export const Consumers: ConsumerConfiguration = {
       window.gtag('set', 'user_properties', userProperties);
     },
     track: (eventName: string, eventProperties: any) => {
-      window.gtag('event', eventName, eventProperties);
+      window.gtag('event', eventName.replace(/[.\-\s]+/g, "_"), eventProperties);
     },
   },
   indicative: {
