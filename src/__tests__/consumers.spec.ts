@@ -383,7 +383,9 @@ describe('Consumers', () => {
         });
         it('should send given tracking data', () => {
           Consumers.ga4.track('event name..with_dots.spaces  and-hyphens', { prop: 'a prop' });
-          expect(window.gtag).toHaveBeenCalledWith('event', 'event_name_with_dots_spaces_and_hyphens', { prop: 'a prop' });
+          expect(window.gtag).toHaveBeenCalledWith('event', 'event_name_with_dots_spaces_and_hyphens', {
+            prop: 'a prop',
+          });
         });
       });
     });
