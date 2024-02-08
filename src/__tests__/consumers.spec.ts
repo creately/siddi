@@ -53,6 +53,11 @@ describe('Consumers', () => {
     buildEvent: () => {},
   };
 
+  const HyperDX = {
+    setGlobalAttributes: () => {},
+    addAction: () => {},
+  };
+
   describe('mixpanel', () => {
     beforeEach(() => {
       window.mixpanel = mixpanel;
@@ -421,6 +426,41 @@ describe('Consumers', () => {
         it('should send given tracking data', () => {
           Consumers.indicative.track('event.name', { prop: 'a prop' });
           expect(window.Indicative.buildEvent).toHaveBeenCalledWith('event.name', { prop: 'a prop' });
+        });
+      });
+    });
+    describe('HyperDX', () => {
+      describe('test', () => {
+        it('should return false if HyperDX is not loaded', () => {
+          expect(Consumers.hyperdx.test()).toBeFalsy();
+        });
+        it('should true if HyperDX is loaded', () => {
+          window.HyperDX = HyperDX;
+          expect(Consumers.hyperdx.test()).toBeTruthy();
+        });
+      });
+      describe('identify', () => {
+        beforeEach(() => {
+          window.HyperDX = HyperDX;
+          jest.spyOn(HyperDX, 'setGlobalAttributes');
+        });
+        it('should register given user', () => {
+          Consumers.hyperdx.identify('user-id');
+          expect(HyperDX.setGlobalAttributes).toHaveBeenCalledWith({ userId: 'user-id' });
+        });
+        it('should not modify any user properties', () => {
+          Consumers.hyperdx.identify('user-id', { plan: 'trial' });
+          expect(window.HyperDX.setGlobalAttributes).toHaveBeenCalledWith({ userId: 'user-id' });
+        });
+      });
+      describe('track', () => {
+        beforeEach(() => {
+          window.HyperDX = HyperDX;
+          jest.spyOn(HyperDX, 'addAction');
+        });
+        it('should send given tracking data', () => {
+          Consumers.hyperdx.track('event.name', { prop: 'a prop' });
+          expect(window.HyperDX.addAction).toHaveBeenCalledWith('event.name', { prop: 'a prop' });
         });
       });
     });
