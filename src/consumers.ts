@@ -28,6 +28,7 @@ declare global {
     sendinblue: any;
     gtag: any;
     Indicative: any;
+    HyperDX: any;
   }
 }
 
@@ -135,6 +136,17 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.Indicative.buildEvent(eventName, eventProperties);
+    },
+  },
+  hyperdx: {
+    test: () => window.HyperDX,
+    identify: (userId: string, _: any = {}) => {
+      window.HyperDX.setGlobalAttributes({
+        userId: userId,
+      });
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.HyperDX.addAction(eventName, eventProperties);
     },
   },
 };
