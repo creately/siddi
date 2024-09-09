@@ -1,3 +1,6 @@
+import { Client } from 'pg';
+import { pgConfig } from './pg_config';
+
 /**
  * Siddi event consumer configuration object
  * test: Function which returnes a boolean based on consumer is initialized and active
@@ -30,6 +33,9 @@ declare global {
     Indicative: any;
     HyperDX: any;
   }
+}
+declare global {
+  var siddiPostgresClient: Client;
 }
 
 /**
@@ -147,6 +153,45 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.HyperDX.addAction(eventName, eventProperties);
+    },
+  },
+  postgres: {
+    test: async () => {
+      if (!global.siddiPostgresClient) {
+        global.siddiPostgresClient = new Client(pgConfig);
+      }
+      try {
+        // Check if the client is already connected by attempting a simple query
+        await global.siddiPostgresClient.query('SELECT 1');
+        return true;
+      } catch (error) {
+        // If the query fails, try to establish a new connection
+        try {
+          await global.siddiPostgresClient.connect();
+          return true;
+        } catch (connectError) {
+          console.error('Failed to connect to Postgres:', connectError);
+          return false;
+        }
+      }
+    },
+    identify: async (userId: string, userProperties: any) => {
+      try {
+        const client = global.siddiPostgresClient;
+        const query = 'INSERT INTO users (user_id, properties) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET properties = EXCLUDED.properties';
+        await client.query(query, [userId, JSON.stringify(userProperties)]);
+      } catch (error) {
+        console.error('Error identifying user in Postgres:', error);
+      }
+    },
+    track: async (eventName: string, eventProperties: any) => {
+      try {
+        const client = global.siddiPostgresClient;
+        const query = 'INSERT INTO events (event_name, user_id, properties) VALUES ($1, $2, $3)';
+        await client.query(query, [eventName, eventProperties.user_id || null, JSON.stringify(eventProperties)]);
+      } catch (error) {
+        console.error('Error inserting event into Postgres:', error);
+      }
     },
   },
 };

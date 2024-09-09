@@ -26,6 +26,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^23.3.12",
+    "@types/pg": "^8.11.8",
     "jest": "^23.6.0",
     "prettier": "^1.15.3",
     "rimraf": "^2.6.3",
@@ -34,5 +35,8 @@
     "typescript": "~3.1.1",
     "webpack": "^4.29.0",
     "webpack-cli": "^3.2.1"
+  },
+  "dependencies": {
+    "pg": "^8.12.0"
   }
 }

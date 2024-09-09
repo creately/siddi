@@ -1,4 +1,9 @@
+import { Client } from 'pg';
 import { Consumers } from './consumers';
+import { pgConfig } from './pg_config';
+
+// If ConsumerConfiguration is used elsewhere, keep this import. Otherwise, you can remove it.
+// import { ConsumerConfiguration } from './consumers';
 
 /**
  * Event consumer configuration object.
@@ -20,7 +25,12 @@ import { Consumers } from './consumers';
  * 6. { name: 'mixpanel', deny: [ 'user.collab.' ] } --> Do not send user.collab.* events
  * 7. { name: 'mixpanel', denyParameters: [ {eventId: 'user.login.failed', parameters: ['location'] } ] } --> Do not send location parameter with user.login.failed event
  */
-export type EventConfiguration = { name: string; allow?: string[]; deny?: string[]; denyParameters?: any };
+export type EventConfiguration = {
+  name: string;
+  allow?: string[];
+  deny?: string[];
+  denyParameters?: any[];
+};
 
 /**
  * Siddi - An abstract event consumer
@@ -44,11 +54,34 @@ export class Siddi {
   private user: { id: string; properties: any };
 
   /**
+   * Postgres client
+   */
+  private postgresClient: Client | null = null;
+
+  /**
    * Constructor
    * @param consumerConfig Event configuration object
    */
   public constructor(private consumerConfig: EventConfiguration[]) {
     this.user = { id: '', properties: undefined };
+    this.initPostgres();
+  }
+
+  /**
+   * Initialize Postgres connection if configured
+   */
+  private async initPostgres() {
+    if (this.consumerConfig.some(config => config.name === 'postgres')) {
+      this.postgresClient = new Client(pgConfig);
+      try {
+        await this.postgresClient.connect();
+        console.log('Connected to Postgres');
+        this.consumerStatus['postgres'] = { enabled: true, identified: false };
+      } catch (error) {
+        console.error('Failed to connect to Postgres:', error);
+        this.consumerStatus['postgres'] = { enabled: false, identified: false };
+      }
+    }
   }
 
   /**
@@ -64,18 +97,18 @@ export class Siddi {
 
   /**
    * Track a given event
-   * @param eventName meaningfull name for the event
+   * @param eventName meaningful name for the event
    * @param eventProperties additional event properties
    */
   public track(eventName: string, eventProperties: any): void {
     this.consumerConfig.forEach(config => {
-      // Assign event properties to a new obeject
+      // Assign event properties to a new object
       let filteredEventProperties = Object.assign({}, eventProperties);
       // consumer name must exist, else ignore it
       if (config.name && Consumers[config.name] && this.shouldTrack(config, eventName)) {
         // If no consumer status tracking exist, check it first
         if (this.consumerStatus[config.name]) {
-          // Status exists, re-ckeck if consumer is enabled and initialized, if it is not enabled
+          // Status exists, re-check if consumer is enabled and initialized, if it is not enabled
           if (!this.consumerStatus[config.name].enabled && Consumers[config.name].test()) {
             this.consumerStatus[config.name].enabled = true;
           }
@@ -91,9 +124,9 @@ export class Siddi {
         // Exclude sending event parameters for particular event
         // when those defined in denyParameters config
         if (eventProperties && config.denyParameters) {
-          config.denyParameters.some(function(element: any, index: number) {
+          config.denyParameters.forEach(element => {
             if (element.eventId === eventName) {
-              config.denyParameters[index].parameters.forEach(function(property: string) {
+              element.parameters.forEach((property: string) => {
                 delete filteredEventProperties[property];
               });
             }
@@ -108,13 +141,22 @@ export class Siddi {
             Consumers[config.name].identify(this.user.id, this.user.properties);
             this.consumerStatus[config.name].identified = true;
           }
-          new Promise(resolve => {
-            Consumers[config.name].track(eventName, filteredEventProperties);
-            resolve();
-          });
+          // Remove the Promise wrapping as it's not necessary here
+          Consumers[config.name].track(eventName, filteredEventProperties);
         }
       }
     });
+  }
+
+  /**
+   * Close connections and perform cleanup
+   */
+  public async close(): Promise<void> {
+    if (this.postgresClient && this.consumerStatus['postgres']?.enabled) {
+      await this.postgresClient.end();
+      console.log('Closed Postgres connection');
+      this.consumerStatus['postgres'].enabled = false;
+    }
   }
 
   /**
