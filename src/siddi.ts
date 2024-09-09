@@ -1,6 +1,9 @@
 import { Client } from 'pg';
-import { Consumers, ConsumerConfiguration } from './consumers';
+import { Consumers } from './consumers';
 import { pgConfig } from './pg_config';
+
+// If ConsumerConfiguration is used elsewhere, keep this import. Otherwise, you can remove it.
+// import { ConsumerConfiguration } from './consumers';
 
 /**
  * Event consumer configuration object.
@@ -94,18 +97,18 @@ export class Siddi {
 
   /**
    * Track a given event
-   * @param eventName meaningfull name for the event
+   * @param eventName meaningful name for the event
    * @param eventProperties additional event properties
    */
   public track(eventName: string, eventProperties: any): void {
     this.consumerConfig.forEach(config => {
-      // Assign event properties to a new obeject
+      // Assign event properties to a new object
       let filteredEventProperties = Object.assign({}, eventProperties);
       // consumer name must exist, else ignore it
       if (config.name && Consumers[config.name] && this.shouldTrack(config, eventName)) {
         // If no consumer status tracking exist, check it first
         if (this.consumerStatus[config.name]) {
-          // Status exists, re-ckeck if consumer is enabled and initialized, if it is not enabled
+          // Status exists, re-check if consumer is enabled and initialized, if it is not enabled
           if (!this.consumerStatus[config.name].enabled && Consumers[config.name].test()) {
             this.consumerStatus[config.name].enabled = true;
           }
@@ -121,9 +124,9 @@ export class Siddi {
         // Exclude sending event parameters for particular event
         // when those defined in denyParameters config
         if (eventProperties && config.denyParameters) {
-          config.denyParameters.some(function(element: any, index: number) {
+          config.denyParameters.forEach(element => {
             if (element.eventId === eventName) {
-              config.denyParameters[index].parameters.forEach(function(property: string) {
+              element.parameters.forEach((property: string) => {
                 delete filteredEventProperties[property];
               });
             }
@@ -138,10 +141,8 @@ export class Siddi {
             Consumers[config.name].identify(this.user.id, this.user.properties);
             this.consumerStatus[config.name].identified = true;
           }
-          new Promise(resolve => {
-            Consumers[config.name].track(eventName, filteredEventProperties);
-            resolve();
-          });
+          // Remove the Promise wrapping as it's not necessary here
+          Consumers[config.name].track(eventName, filteredEventProperties);
         }
       }
     });
@@ -151,9 +152,10 @@ export class Siddi {
    * Close connections and perform cleanup
    */
   public async close(): Promise<void> {
-    if (this.postgresClient) {
+    if (this.postgresClient && this.consumerStatus['postgres']?.enabled) {
       await this.postgresClient.end();
       console.log('Closed Postgres connection');
+      this.consumerStatus['postgres'].enabled = false;
     }
   }
 
