@@ -1,4 +1,6 @@
-import { Consumers } from './consumers';
+import { Client } from 'pg';
+import { Consumers, ConsumerConfiguration } from './consumers';
+import { pgConfig } from './pg_config';
 
 /**
  * Event consumer configuration object.
@@ -20,7 +22,12 @@ import { Consumers } from './consumers';
  * 6. { name: 'mixpanel', deny: [ 'user.collab.' ] } --> Do not send user.collab.* events
  * 7. { name: 'mixpanel', denyParameters: [ {eventId: 'user.login.failed', parameters: ['location'] } ] } --> Do not send location parameter with user.login.failed event
  */
-export type EventConfiguration = { name: string; allow?: string[]; deny?: string[]; denyParameters?: any };
+export type EventConfiguration = {
+  name: string;
+  allow?: string[];
+  deny?: string[];
+  denyParameters?: any[];
+};
 
 /**
  * Siddi - An abstract event consumer
@@ -44,11 +51,34 @@ export class Siddi {
   private user: { id: string; properties: any };
 
   /**
+   * Postgres client
+   */
+  private postgresClient: Client | null = null;
+
+  /**
    * Constructor
    * @param consumerConfig Event configuration object
    */
   public constructor(private consumerConfig: EventConfiguration[]) {
     this.user = { id: '', properties: undefined };
+    this.initPostgres();
+  }
+
+  /**
+   * Initialize Postgres connection if configured
+   */
+  private async initPostgres() {
+    if (this.consumerConfig.some(config => config.name === 'postgres')) {
+      this.postgresClient = new Client(pgConfig);
+      try {
+        await this.postgresClient.connect();
+        console.log('Connected to Postgres');
+        this.consumerStatus['postgres'] = { enabled: true, identified: false };
+      } catch (error) {
+        console.error('Failed to connect to Postgres:', error);
+        this.consumerStatus['postgres'] = { enabled: false, identified: false };
+      }
+    }
   }
 
   /**
@@ -115,6 +145,16 @@ export class Siddi {
         }
       }
     });
+  }
+
+  /**
+   * Close connections and perform cleanup
+   */
+  public async close(): Promise<void> {
+    if (this.postgresClient) {
+      await this.postgresClient.end();
+      console.log('Closed Postgres connection');
+    }
   }
 
   /**
