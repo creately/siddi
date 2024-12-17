@@ -1,3 +1,5 @@
+import { prepareMatomoDimensions } from './utils';
+
 /**
  * Siddi event consumer configuration object
  * test: Function which returnes a boolean based on consumer is initialized and active
@@ -29,6 +31,7 @@ declare global {
     gtag: any;
     Indicative: any;
     HyperDX: any;
+    Piwik: any;
   }
 }
 
@@ -147,6 +150,20 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.HyperDX.addAction(eventName, eventProperties);
+    },
+  },
+  matomo: {
+    test: () => !!window.Piwik,
+    identify: (userId: string, _: any = {}) => {
+      window.Piwik.getAsyncTracker().setUserId(userId);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.Piwik.getAsyncTracker().trackEvent(
+        eventProperties.eventCategory,
+        eventName,
+        eventName,
+        1,
+        prepareMatomoDimensions(eventProperties));
     },
   },
 };
