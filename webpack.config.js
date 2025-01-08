@@ -1,20 +1,18 @@
 const path = require('path');
-
-console.log( __dirname );
+const webpack = require('webpack');
 
 module.exports = {
-    mode: 'production',
-    entry: {
-        bundle: './src/bundle.ts',
-        index: './src/index.ts',
-    },
+    entry: './src/siddi.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js'
+        filename: 'siddi.js'
     },
     resolve: {
         extensions: [ '.ts', '.js' ]
     },
+    plugins: [
+        new webpack.SourceMapDevToolPlugin({ filename: "[file].map" }),
+    ],
     module: {
         rules: [
             { test: /\.ts$/, use: 'ts-loader' },

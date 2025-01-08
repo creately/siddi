@@ -24,7 +24,7 @@ declare global {
     outbound: any;
     ga: any;
     snowplow: any;
-    snowplowschema: string; //Variable which holds the schema path
+    snowplowschema?: string; //Variable which holds the schema path
     sendinblue: any;
     gtag: any;
     Indicative: any;

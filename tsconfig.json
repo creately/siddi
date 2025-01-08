@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "lib": [ "dom", "es2015" ],
+    "lib": ["dom", "es2015"],
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
@@ -17,11 +17,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "typeRoots": [ "node_modules/@types" ],
+    "typeRoots": ["node_modules/@types"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "exclude": [
-    "**/__tests__/*"
-  ]
+  "exclude": ["node_modules",  "./dist/**/*", "**/__tests__/*"]
 }
