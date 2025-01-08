@@ -4,9 +4,9 @@
   "description": "A convenient event tracker API which sends events to multiple consumers",
   "main": "dist/siddi.js",
   "scripts": {
-    "build": "webpack --mode=production",
-    "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production",
+    "build": "MATOMO_OFFSET=3 webpack --mode=production",
+    "build:dev": "MATOMO_OFFSET=3 webpack --mode=development",
+    "build:prod": "MATOMO_OFFSET=0 webpack --mode=production",
     "lint": "prettier --print-width 120 --single-quote --trailing-comma es5 --write \"src/**/*.ts\"",
     "test": "jest --coverage",
     "test:watch": "jest --watch --coverage",
