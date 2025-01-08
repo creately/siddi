@@ -163,7 +163,8 @@ export const Consumers: ConsumerConfiguration = {
         eventName,
         eventName,
         1,
-        prepareMatomoDimensions(eventProperties));
+        prepareMatomoDimensions(eventProperties)
+      );
     },
   },
 };
