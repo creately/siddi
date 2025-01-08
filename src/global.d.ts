@@ -1,0 +1,1 @@
+declare const WEBPACK_INJECT___MATOMO_DIMENSION_OFFSET: string;

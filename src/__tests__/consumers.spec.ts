@@ -290,7 +290,7 @@ describe('Consumers', () => {
       describe('identify', () => {
         beforeEach(() => {
           window.ga = ga;
-          spyOn(window, 'ga');
+          jest.spyOn(window, 'ga');
         });
         it('should register given user', () => {
           Consumers.googleAnalytics.identify('user-id');
@@ -304,7 +304,7 @@ describe('Consumers', () => {
       describe('track', () => {
         beforeEach(() => {
           window.ga = ga;
-          spyOn(window, 'ga');
+          jest.spyOn(window, 'ga');
         });
         it('should use All as the event category if not provided in the event properties', () => {
           Consumers.googleAnalytics.track('dog.bark');
@@ -369,8 +369,8 @@ describe('Consumers', () => {
       });
       describe('identify', () => {
         beforeEach(() => {
-          window.gtag = ga4;
-          spyOn(window, 'gtag');
+          window.gtag = () => {};
+          jest.spyOn(window, 'gtag');
         });
         it('should register given user', () => {
           Consumers.ga4.identify('user-id');
@@ -383,8 +383,8 @@ describe('Consumers', () => {
       });
       describe('track', () => {
         beforeEach(() => {
-          window.gtag = ga4;
-          spyOn(window, 'gtag');
+          window.gtag = () => {};
+          jest.spyOn(window, 'gtag');
         });
         it('should send given tracking data', () => {
           Consumers.ga4.track('event name..with_dots.spaces  and-hyphens', { prop: 'a prop' });

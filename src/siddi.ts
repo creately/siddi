@@ -110,7 +110,7 @@ export class Siddi {
           }
           new Promise(resolve => {
             Consumers[config.name].track(eventName, filteredEventProperties);
-            resolve();
+            resolve(true);
           });
         }
       }
