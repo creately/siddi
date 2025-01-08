@@ -7,7 +7,7 @@ const prepareMatomoDimensions = (eventProperties: any) => {
     if (!regexParts[1]) {
       return { ...evProps, [k]: v };
     }
-    return { ...evProps, [`dimension${parseInt(regexParts[1]) + WEBPACK_INJECT___MATOMO_DIMENSION_OFFSET}`]: v };
+    return { ...evProps, [`dimension${parseInt(regexParts[1]) + 3}`]: v };
   }, {});
 };
 

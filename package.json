@@ -4,7 +4,7 @@
   "description": "A convenient event tracker API which sends events to multiple consumers",
   "main": "dist/siddi.js",
   "scripts": {
-    "build": "MATOMO_OFFSET=3 webpack --mode=production",
+    "build": "tsc",
     "build:dev": "MATOMO_OFFSET=3 webpack --mode=development",
     "build:prod": "MATOMO_OFFSET=0 webpack --mode=production",
     "lint": "prettier --print-width 120 --single-quote --trailing-comma es5 --write \"src/**/*.ts\"",
