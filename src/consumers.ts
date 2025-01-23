@@ -24,13 +24,28 @@ declare global {
     outbound: any;
     ga: any;
     snowplow: any;
-    snowplowschema: string; //Variable which holds the schema path
+    snowplowschema?: string; //Variable which holds the schema path
     sendinblue: any;
     gtag: any;
     Indicative: any;
     HyperDX: any;
+    Piwik: any;
   }
 }
+
+/* to transform existing event properties to matomo dimensions */
+const prepareMatomoDimensions = (eventProperties: any) => {
+  return Object.entries(eventProperties).reduce((evProps: Record<string, any>, [k, v]) => {
+    if (/value[0-9]Type/.test(k)) {
+      return evProps;
+    }
+    const regexParts = /value([0-9])$/.exec(k) || [];
+    if (!regexParts[1]) {
+      return { ...evProps, [k]: v };
+    }
+    return { ...evProps, [`dimension${parseInt(regexParts[1]) + 3}`]: v };
+  }, {});
+};
 
 /**
  * All consumer implementations
@@ -147,6 +162,21 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.HyperDX.addAction(eventName, eventProperties);
+    },
+  },
+  matomo: {
+    test: () => !!window.Piwik,
+    identify: (userId: string, _: any = {}) => {
+      window.Piwik.getAsyncTracker().setUserId(userId);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.Piwik.getAsyncTracker().trackEvent(
+        eventProperties.eventCategory,
+        eventName,
+        eventName,
+        1,
+        prepareMatomoDimensions(eventProperties)
+      );
     },
   },
 };
