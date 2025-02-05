@@ -43,7 +43,15 @@ const prepareMatomoDimensions = (eventProperties: any) => {
     if (!regexParts[1]) {
       return { ...evProps, [k]: v };
     }
-    return { ...evProps, [`dimension${parseInt(regexParts[1]) + 3}`]: v };
+    /*
+      IMPORTANT NOTE: Make sure parameters we are interested in (value1, value2, value3...) are
+      mapped continuously in Matomo as dimensions when setting up because we are mapping these
+      values to dimensions in continuous order and adds an offset(3) to disregard unwanted dimensions.
+      ie: As of this implementation, our existing tracking events are mapped to dimension 4, 5, 6 in Matomo
+          to value1, value2, value3 respectively. Siddi adds the offset 3 to tracking data received from
+          clients(Nuclues, Phoenix, Gravity etc...) so the value1,2,3 is mapped to correct Matomo dimension
+    */
+    return { ...evProps, [`dimension${parseInt(regexParts[1]) + /* value-to-dimension mapping offset -> 3 */ 3 }`]: v };
   }, {});
 };
 
