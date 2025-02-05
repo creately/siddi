@@ -24,13 +24,36 @@ declare global {
     outbound: any;
     ga: any;
     snowplow: any;
-    snowplowschema: string; //Variable which holds the schema path
+    snowplowschema?: string; //Variable which holds the schema path
     sendinblue: any;
     gtag: any;
     Indicative: any;
     HyperDX: any;
+    Piwik: any;
   }
 }
+
+/* to transform existing event properties to matomo dimensions */
+const prepareMatomoDimensions = (eventProperties: any) => {
+  return Object.entries(eventProperties).reduce((evProps: Record<string, any>, [k, v]) => {
+    if (/value[0-9]Type/.test(k)) {
+      return evProps;
+    }
+    const regexParts = /value([0-9])$/.exec(k) || [];
+    if (!regexParts[1]) {
+      return { ...evProps, [k]: v };
+    }
+    /*
+      IMPORTANT NOTE: Make sure parameters we are interested in (value1, value2, value3...) are
+      mapped continuously in Matomo as dimensions when setting up because we are mapping these
+      values to dimensions in continuous order and adds an offset(3) to disregard unwanted dimensions.
+      ie: As of this implementation, our existing tracking events are mapped to dimension 4, 5, 6 in Matomo
+          to value1, value2, value3 respectively. Siddi adds the offset 3 to tracking data received from
+          clients(Nuclues, Phoenix, Gravity etc...) so the value1,2,3 is mapped to correct Matomo dimension
+    */
+    return { ...evProps, [`dimension${parseInt(regexParts[1]) + /* value-to-dimension mapping offset -> 3 */ 3 }`]: v };
+  }, {});
+};
 
 /**
  * All consumer implementations
@@ -147,6 +170,21 @@ export const Consumers: ConsumerConfiguration = {
     },
     track: (eventName: string, eventProperties: any) => {
       window.HyperDX.addAction(eventName, eventProperties);
+    },
+  },
+  matomo: {
+    test: () => !!window.Piwik,
+    identify: (userId: string, _: any = {}) => {
+      window.Piwik.getAsyncTracker().setUserId(userId);
+    },
+    track: (eventName: string, eventProperties: any) => {
+      window.Piwik.getAsyncTracker().trackEvent(
+        eventProperties.eventCategory,
+        eventName,
+        eventName,
+        1,
+        prepareMatomoDimensions(eventProperties)
+      );
     },
   },
 };
