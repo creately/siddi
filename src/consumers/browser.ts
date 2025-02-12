@@ -1,20 +1,5 @@
-/**
- * Siddi event consumer configuration object
- * test: Function which returnes a boolean based on consumer is initialized and active
- * track: Tracking function implementation based on consumer API
- * identify: User identification function implementation based on consumer API
- */
-export type ConsumerConfiguration = {
-  [name: string]: {
-    test: Function;
-    identify: Function;
-    track: Function;
-  };
-};
-
-/**
- * Declare what we will add or reference on the browser global.
- */
+import { Consumer } from '../siddi';
+import { prepareMatomoDimensions } from '../utils';
 declare global {
   interface Window {
     siddi: any;
@@ -33,32 +18,8 @@ declare global {
   }
 }
 
-/* to transform existing event properties to matomo dimensions */
-const prepareMatomoDimensions = (eventProperties: any) => {
-  return Object.entries(eventProperties).reduce((evProps: Record<string, any>, [k, v]) => {
-    if (/value[0-9]Type/.test(k)) {
-      return evProps;
-    }
-    const regexParts = /value([0-9])$/.exec(k) || [];
-    if (!regexParts[1]) {
-      return { ...evProps, [k]: v };
-    }
-    /*
-      IMPORTANT NOTE: Make sure parameters we are interested in (value1, value2, value3...) are
-      mapped continuously in Matomo as dimensions when setting up because we are mapping these
-      values to dimensions in continuous order and adds an offset(3) to disregard unwanted dimensions.
-      ie: As of this implementation, our existing tracking events are mapped to dimension 4, 5, 6 in Matomo
-          to value1, value2, value3 respectively. Siddi adds the offset 3 to tracking data received from
-          clients(Nuclues, Phoenix, Gravity etc...) so the value1,2,3 is mapped to correct Matomo dimension
-    */
-    return { ...evProps, [`dimension${parseInt(regexParts[1]) + /* value-to-dimension mapping offset -> 3 */ 3 }`]: v };
-  }, {});
-};
-
-/**
- * All consumer implementations
- */
-export const Consumers: ConsumerConfiguration = {
+/* Browser-based consumers implementation */
+export const Consumers: Record<string, Consumer> = {
   mixpanel: {
     test: () => window.mixpanel && window.mixpanel.__loaded,
     identify: (userId: string, userProperties: any) => {
