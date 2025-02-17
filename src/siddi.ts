@@ -84,7 +84,7 @@ export class Siddi {
    * @param eventName meaningfull name for the event
    * @param eventProperties additional event properties
    */
-  public track( eventName: string, eventProperties: any ): void {
+  public track(eventName: string, eventProperties: any): void {
     this.consumerConfig.forEach(config => {
       // Assign event properties to a new obeject
       let filteredEventProperties = Object.assign({}, eventProperties);
@@ -108,9 +108,9 @@ export class Siddi {
         // Exclude sending event parameters for particular event
         // when those defined in denyParameters config
         if (eventProperties && config.denyParameters) {
-          config.denyParameters.some(function(element: any, index: number) {
+          config.denyParameters.some(function (element: any, index: number) {
             if (element.eventId === eventName) {
-              config.denyParameters[index].parameters.forEach(function(property: string) {
+              config.denyParameters[index].parameters.forEach(function (property: string) {
                 delete filteredEventProperties[property];
               });
             }
@@ -169,3 +169,6 @@ export class Siddi {
     return true;
   }
 }
+
+export { Consumers as BrowserConsumers } from './consumers/browser';
+export { Consumers as ServerConsumers } from './consumers/node';
