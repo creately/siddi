@@ -5,7 +5,7 @@ export class Matomo {
     private trackingClient: any;
     private _userId: string = '';
     private _payload: object = {
-        ua: "Create:Siddi"
+        ua: "Creately:Siddi"
     };
 
     constructor(private config: any) {
@@ -25,9 +25,9 @@ export class Matomo {
         const data = {
             action_name: eventName,
             uid: this._userId || userId,
-            url: this.config.MATOMO_SOURCE_URL || ('https://chargebee.creately.com/?event=' + eventName),
-            e_a: eventProperties.eventType || 'unknown',
-            e_c: "Chargebee",
+            url: this.config.MATOMO_SOURCE_URL || ('https://siddi.creately.com/?event=' + eventName),
+            e_a: eventProperties.eventAction || 'unknown',
+            e_c: eventProperties.eventCategory || "unspecified",
             e_n: eventName
         };
 
