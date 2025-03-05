@@ -1,4 +1,4 @@
-import { Consumers } from './consumers';
+import { Consumers } from './consumers/browser';
 
 /**
  * Event consumer configuration object.
@@ -21,6 +21,19 @@ import { Consumers } from './consumers';
  * 7. { name: 'mixpanel', denyParameters: [ {eventId: 'user.login.failed', parameters: ['location'] } ] } --> Do not send location parameter with user.login.failed event
  */
 export type EventConfiguration = { name: string; allow?: string[]; deny?: string[]; denyParameters?: any };
+
+/**
+ * Siddi event consumer type
+ * test: Function which returnes a boolean based on consumer is initialized and active
+ * track: Tracking function implementation based on consumer API
+ * identify: User identification function implementation based on consumer API
+ */
+export interface Consumer {
+  test: Function;
+  identify: (userId: string, userProperties: object) => void;
+  track: (eventName: string, eventProperties: object) => void;
+  init?: Function;
+}
 
 /**
  * Siddi - An abstract event consumer
@@ -47,8 +60,12 @@ export class Siddi {
    * Constructor
    * @param consumerConfig Event configuration object
    */
-  public constructor(private consumerConfig: EventConfiguration[]) {
+  public constructor(
+    private consumerConfig: EventConfiguration[],
+    private _consumers: Record<string, Consumer> = Consumers
+  ) {
     this.user = { id: '', properties: undefined };
+    Object.values(this._consumers).forEach(consumer => consumer.init && consumer.init());
   }
 
   /**
@@ -72,16 +89,16 @@ export class Siddi {
       // Assign event properties to a new obeject
       let filteredEventProperties = Object.assign({}, eventProperties);
       // consumer name must exist, else ignore it
-      if (config.name && Consumers[config.name] && this.shouldTrack(config, eventName)) {
+      if (config.name && this._consumers[config.name] && this.shouldTrack(config, eventName)) {
         // If no consumer status tracking exist, check it first
         if (this.consumerStatus[config.name]) {
           // Status exists, re-ckeck if consumer is enabled and initialized, if it is not enabled
-          if (!this.consumerStatus[config.name].enabled && Consumers[config.name].test()) {
+          if (!this.consumerStatus[config.name].enabled && this._consumers[config.name].test()) {
             this.consumerStatus[config.name].enabled = true;
           }
         } else {
           // Add status info of the new consumer
-          if (Consumers[config.name].test()) {
+          if (this._consumers[config.name].test()) {
             this.consumerStatus[config.name] = { enabled: true, identified: false };
           } else {
             this.consumerStatus[config.name] = { enabled: false, identified: false };
@@ -105,11 +122,11 @@ export class Siddi {
         if (this.consumerStatus[config.name].enabled) {
           if (this.user.id && !this.consumerStatus[config.name].identified) {
             // Identify the user
-            Consumers[config.name].identify(this.user.id, this.user.properties);
+            this._consumers[config.name].identify(this.user.id, this.user.properties);
             this.consumerStatus[config.name].identified = true;
           }
           new Promise(resolve => {
-            Consumers[config.name].track(eventName, filteredEventProperties);
+            this._consumers[config.name].track(eventName, filteredEventProperties);
             resolve(true);
           });
         }
@@ -152,3 +169,6 @@ export class Siddi {
     return true;
   }
 }
+
+export { Consumers as BrowserConsumers } from './consumers/browser';
+export { Consumers as ServerConsumers } from './consumers/node';
