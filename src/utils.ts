@@ -21,4 +21,5 @@ export const prepareMatomoDimensions = (eventProperties: any) => {
 };
 
 export const DEFAULT_LOG_PREFIX = '[Siddi]';
-export const LOG_MSG = (message: string, prefix: string = DEFAULT_LOG_PREFIX) => console.log(`${prefix}\t\t > ${message}`);
+export const LOG_MSG = (message: string, prefix: string = DEFAULT_LOG_PREFIX) =>
+  console.log(`${prefix}\t\t > ${message}`);

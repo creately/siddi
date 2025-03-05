@@ -32,7 +32,7 @@ export interface Consumer {
   test: Function;
   identify: (userId: string, userProperties: object) => void;
   track: (eventName: string, eventProperties: object) => void;
-  init?: Function
+  init?: Function;
 }
 
 /**
@@ -108,9 +108,9 @@ export class Siddi {
         // Exclude sending event parameters for particular event
         // when those defined in denyParameters config
         if (eventProperties && config.denyParameters) {
-          config.denyParameters.some(function (element: any, index: number) {
+          config.denyParameters.some(function(element: any, index: number) {
             if (element.eventId === eventName) {
-              config.denyParameters[index].parameters.forEach(function (property: string) {
+              config.denyParameters[index].parameters.forEach(function(property: string) {
                 delete filteredEventProperties[property];
               });
             }
