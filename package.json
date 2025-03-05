@@ -37,7 +37,6 @@
     "webpack-cli": "^3.2.1"
   },
   "dependencies": {
-    "amplitude": "^6.0.0",
     "matomo-tracker": "^2.2.4"
   }
 }
