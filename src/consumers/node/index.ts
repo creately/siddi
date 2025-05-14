@@ -13,7 +13,7 @@ export const Consumers: Record<string, Consumer> = {
       });
     },
     test: () => true,
-    identify: (userId: string, userProperties: object) => {
+    identify: (userId: string, userProperties?: object) => {
       matomoTracker.identify(userId, userProperties);
     },
     track: (eventName: string, eventProperties: object) => {

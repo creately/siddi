@@ -1,4 +1,5 @@
-import { Consumers } from './consumers/browser';
+import { Consumers as BrowserConsumers } from './consumers/browser';
+import { Consumers as ServerConsumers } from './consumers/node';
 
 /**
  * Event consumer configuration object.
@@ -29,8 +30,8 @@ export type EventConfiguration = { name: string; allow?: string[]; deny?: string
  * identify: User identification function implementation based on consumer API
  */
 export interface Consumer {
-  test: Function;
-  identify: (userId: string, userProperties: object) => void;
+  test: () => boolean;
+  identify: (userId: string, userProperties?: object) => void;
   track: (eventName: string, eventProperties: object) => void;
   init?: Function;
 }
@@ -62,7 +63,7 @@ export class Siddi {
    */
   public constructor(
     private consumerConfig: EventConfiguration[],
-    private _consumers: Record<string, Consumer> = Consumers
+    private _consumers: Record<string, Consumer> = typeof window !== 'undefined' ? BrowserConsumers : ServerConsumers
   ) {
     this.user = { id: '', properties: undefined };
     Object.values(this._consumers).forEach(consumer => consumer.init && consumer.init());
@@ -170,5 +171,8 @@ export class Siddi {
   }
 }
 
-export { Consumers as BrowserConsumers } from './consumers/browser';
-export { Consumers as ServerConsumers } from './consumers/node';
+// Export the default class
+export default Siddi;
+
+// Export consumers separately
+export { BrowserConsumers, ServerConsumers };

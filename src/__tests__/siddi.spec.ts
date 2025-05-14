@@ -1,5 +1,4 @@
-import { Siddi } from '../siddi';
-import { Consumers } from '../consumers';
+import { Siddi, BrowserConsumers } from '../siddi';
 
 describe('Siddi', () => {
   let siddi: Siddi;
@@ -20,12 +19,12 @@ describe('Siddi', () => {
   window.mixpanel = mixpanel;
   window.heap = heap;
 
-  let mixpanelTestSpy: jest.SpyInstance;
+  let mixpanelTestSpy: jest.SpyInstance<boolean, []>;
   let mixpanelTrackSpy: jest.SpyInstance;
   let mixpanelIdentifySpy: jest.SpyInstance;
   let heapIdentifySpy: jest.SpyInstance;
   beforeEach(() => {
-    mixpanelTestSpy = jest.spyOn(Consumers['mixpanel'], 'test');
+    mixpanelTestSpy = jest.spyOn(BrowserConsumers['mixpanel'], 'test') as jest.SpyInstance<boolean, []>;
     mixpanelTrackSpy = jest.spyOn(mixpanel, 'track');
     mixpanelIdentifySpy = jest.spyOn(mixpanel, 'identify');
     heapIdentifySpy = jest.spyOn(heap, 'identify');

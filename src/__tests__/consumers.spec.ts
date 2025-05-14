@@ -1,4 +1,4 @@
-import { Consumers } from '../consumers';
+import { BrowserConsumers } from '../siddi';
 
 describe('Consumers', () => {
   const mixpanel = {
@@ -64,15 +64,15 @@ describe('Consumers', () => {
     });
     describe('test', () => {
       it('should return true if loaded', () => {
-        expect(Consumers.mixpanel.test()).toBeTruthy();
+        expect(BrowserConsumers.mixpanel.test()).toBeTruthy();
       });
       it('should return false if not loaded', () => {
         delete window.mixpanel;
-        expect(Consumers.mixpanel.test()).toBeFalsy();
+        expect(BrowserConsumers.mixpanel.test()).toBeFalsy();
       });
       it('should return false if not initialized', () => {
         delete window.mixpanel.__loaded;
-        expect(Consumers.mixpanel.test()).toBeFalsy();
+        expect(BrowserConsumers.mixpanel.test()).toBeFalsy();
       });
     });
     describe('identify', () => {
@@ -81,11 +81,11 @@ describe('Consumers', () => {
         jest.spyOn(mixpanel.people, 'set');
       });
       it('should register the given user', () => {
-        Consumers.mixpanel.identify('mock-user-id');
+        BrowserConsumers.mixpanel.identify('mock-user-id', {});
         expect(mixpanel.identify).toBeCalledWith('mock-user-id');
       });
       it('should set user properties if given', () => {
-        Consumers.mixpanel.identify('mock-user-id', { paid: 'no' });
+        BrowserConsumers.mixpanel.identify('mock-user-id', { paid: 'no' });
         expect(mixpanel.identify).toBeCalledWith('mock-user-id');
         expect(mixpanel.people.set).toBeCalledWith({ paid: 'no' });
       });
@@ -95,7 +95,7 @@ describe('Consumers', () => {
         jest.spyOn(mixpanel, 'track');
       });
       it('should send given tracking data', () => {
-        Consumers.mixpanel.track('event.name', { prop: 'a prop' });
+        BrowserConsumers.mixpanel.track('event.name', { prop: 'a prop' });
         expect(mixpanel.track).toBeCalledWith('event.name', { prop: 'a prop' });
       });
     });
@@ -106,15 +106,15 @@ describe('Consumers', () => {
     });
     describe('test', () => {
       it('should return true if loaded', () => {
-        expect(Consumers.heap.test()).toBeTruthy();
+        expect(BrowserConsumers.heap.test()).toBeTruthy();
       });
       it('should return false if not loaded', () => {
         delete window.heap;
-        expect(Consumers.heap.test()).toBeFalsy();
+        expect(BrowserConsumers.heap.test()).toBeFalsy();
       });
       it('should return false if not initialized', () => {
         delete window.heap.track;
-        expect(Consumers.heap.test()).toBeFalsy();
+        expect(BrowserConsumers.heap.test()).toBeFalsy();
       });
     });
     describe('identify', () => {
@@ -123,11 +123,11 @@ describe('Consumers', () => {
         jest.spyOn(heap, 'addUserProperties');
       });
       it('should register the given user', () => {
-        Consumers.heap.identify('mock-user-id');
+        BrowserConsumers.heap.identify('mock-user-id', {});
         expect(heap.identify).toBeCalledWith('mock-user-id');
       });
       it('should set user properties if given', () => {
-        Consumers.heap.identify('mock-user-id', { paid: 'no' });
+        BrowserConsumers.heap.identify('mock-user-id', { paid: 'no' });
         expect(heap.identify).toBeCalledWith('mock-user-id');
         expect(heap.addUserProperties).toBeCalledWith({ paid: 'no' });
       });
@@ -138,7 +138,7 @@ describe('Consumers', () => {
         jest.spyOn(heap, 'track');
       });
       it('should send given tracking data', () => {
-        Consumers.heap.track('event.name', { prop: 'a prop' });
+        BrowserConsumers.heap.track('event.name', { prop: 'a prop' });
         expect(heap.track).toBeCalledWith('event.name', { prop: 'a prop' });
       });
     });
@@ -149,15 +149,15 @@ describe('Consumers', () => {
     });
     describe('test', () => {
       it('should return true if loaded', () => {
-        expect(Consumers.amplitude.test()).toBeTruthy();
+        expect(BrowserConsumers.amplitude.test()).toBeTruthy();
       });
       it('should return false if not loaded', () => {
         delete window.amplitude;
-        expect(Consumers.amplitude.test()).toBeFalsy();
+        expect(BrowserConsumers.amplitude.test()).toBeFalsy();
       });
       it('should return false if not initialized', () => {
         delete window.amplitude.options;
-        expect(Consumers.amplitude.test()).toBeFalsy();
+        expect(BrowserConsumers.amplitude.test()).toBeFalsy();
       });
     });
     describe('identify', () => {
@@ -166,11 +166,11 @@ describe('Consumers', () => {
         jest.spyOn(amplitudeInstance, 'setUserProperties');
       });
       it('should register the given user', () => {
-        Consumers.amplitude.identify('mock-user-id');
+        BrowserConsumers.amplitude.identify('mock-user-id', {});
         expect(amplitudeInstance.setUserId).toBeCalledWith('mock-user-id');
       });
       it('should set user properties if given', () => {
-        Consumers.amplitude.identify('mock-user-id', { paid: 'no' });
+        BrowserConsumers.amplitude.identify('mock-user-id', { paid: 'no' });
         expect(amplitudeInstance.setUserId).toBeCalledWith('mock-user-id');
         expect(amplitudeInstance.setUserProperties).toBeCalledWith({ paid: 'no' });
       });
@@ -180,7 +180,7 @@ describe('Consumers', () => {
         jest.spyOn(amplitudeInstance, 'logEvent');
       });
       it('should send given tracking data', () => {
-        Consumers.amplitude.track('event.name', { prop: 'a prop' });
+        BrowserConsumers.amplitude.track('event.name', { prop: 'a prop' });
         expect(amplitudeInstance.logEvent).toBeCalledWith('event.name', { prop: 'a prop' });
       });
     });
@@ -192,15 +192,15 @@ describe('Consumers', () => {
     });
     describe('test', () => {
       it('should return true if loaded', () => {
-        expect(Consumers.snowplow.test()).toBeTruthy();
+        expect(BrowserConsumers.snowplow.test()).toBeTruthy();
       });
       it('should return false if not loaded', () => {
         delete window.snowplow;
-        expect(Consumers.snowplow.test()).toBeFalsy();
+        expect(BrowserConsumers.snowplow.test()).toBeFalsy();
       });
       it('should return false if schema is not set', () => {
         delete window.snowplowschema;
-        expect(Consumers.snowplow.test()).toBeFalsy();
+        expect(BrowserConsumers.snowplow.test()).toBeFalsy();
       });
     });
     describe('identify', () => {
@@ -208,11 +208,11 @@ describe('Consumers', () => {
         jest.spyOn(window, 'snowplow');
       });
       it('should call setUserId event', () => {
-        Consumers.snowplow.identify('vetorRajaId');
+        BrowserConsumers.snowplow.identify('vetorRajaId', {});
         expect(window.snowplow).toHaveBeenCalledWith('setUserId', 'vetorRajaId');
       });
       it('should call setUserId event with additional parameter', () => {
-        Consumers.snowplow.identify('vetorRajaId', { loc: 'dd' });
+        BrowserConsumers.snowplow.identify('vetorRajaId', { loc: 'dd' });
         expect(window.snowplow).toHaveBeenCalledWith('setUserId', 'vetorRajaId');
       });
     });
@@ -221,7 +221,7 @@ describe('Consumers', () => {
         jest.spyOn(window, 'snowplow');
       });
       it('should send given tracking data', () => {
-        Consumers.snowplow.track('event.name', { prop: 'a prop' });
+        BrowserConsumers.snowplow.track('event.name', { prop: 'a prop' });
         expect(window.snowplow).toBeCalledWith('trackSelfDescribingEvent', {
           schema: 'iglu://schema.create.ly',
           data: {
@@ -231,7 +231,7 @@ describe('Consumers', () => {
         });
       });
       it('should send given tracking data without additional parameter', () => {
-        Consumers.snowplow.track('event.name');
+        BrowserConsumers.snowplow.track('event.name', {});
         expect(window.snowplow).toBeCalledWith('trackSelfDescribingEvent', {
           schema: 'iglu://schema.create.ly',
           data: {
@@ -247,15 +247,15 @@ describe('Consumers', () => {
     });
     describe('test', () => {
       it('should return true if loaded', () => {
-        expect(Consumers.outbound.test()).toBeTruthy();
+        expect(BrowserConsumers.outbound.test()).toBeTruthy();
       });
       it('should return false if not loaded', () => {
         delete window.outbound;
-        expect(Consumers.outbound.test()).toBeFalsy();
+        expect(BrowserConsumers.outbound.test()).toBeFalsy();
       });
       it('should return false if not initialized', () => {
         delete window.outbound.track;
-        expect(Consumers.outbound.test()).toBeFalsy();
+        expect(BrowserConsumers.outbound.test()).toBeFalsy();
       });
     });
     describe('identify', () => {
@@ -263,7 +263,11 @@ describe('Consumers', () => {
         jest.spyOn(outbound, 'identify');
       });
       it('should register the given user', () => {
-        Consumers.outbound.identify('mock-user-id', { emotion: 'lol' });
+        BrowserConsumers.outbound.identify('mock-user-id', {});
+        expect(outbound.identify).toBeCalledWith('mock-user-id', {});
+      });
+      it('should register the given user with properties', () => {
+        BrowserConsumers.outbound.identify('mock-user-id', { emotion: 'lol' });
         expect(outbound.identify).toBeCalledWith('mock-user-id', { emotion: 'lol' });
       });
     });
@@ -273,18 +277,18 @@ describe('Consumers', () => {
         jest.spyOn(outbound, 'track');
       });
       it('should send given tracking data', () => {
-        Consumers.outbound.track('event.name', { prop: 'a prop' });
+        BrowserConsumers.outbound.track('event.name', { prop: 'a prop' });
         expect(outbound.track).toBeCalledWith('event.name', { prop: 'a prop' });
       });
     });
     describe('googleAnalytics', () => {
       describe('test', () => {
         it('should return false if ga is not loaded', () => {
-          expect(Consumers.googleAnalytics.test()).toBeFalsy();
+          expect(BrowserConsumers.googleAnalytics.test()).toBeFalsy();
         });
         it('should true if ga is loaded', () => {
           window.ga = ga;
-          expect(Consumers.googleAnalytics.test()).toBeTruthy();
+          expect(BrowserConsumers.googleAnalytics.test()).toBeTruthy();
         });
       });
       describe('identify', () => {
@@ -293,11 +297,11 @@ describe('Consumers', () => {
           jest.spyOn(window, 'ga');
         });
         it('should register given user', () => {
-          Consumers.googleAnalytics.identify('user-id');
+          BrowserConsumers.googleAnalytics.identify('user-id', {});
           expect(window.ga).toHaveBeenCalledWith('set', { userId: 'user-id' });
         });
         it('should not modify any user properties', () => {
-          Consumers.googleAnalytics.identify('user-id', { plan: 'trial' });
+          BrowserConsumers.googleAnalytics.identify('user-id', { plan: 'trial' });
           expect(window.ga).toHaveBeenCalledWith('set', { userId: 'user-id', plan: 'trial' });
         });
       });
@@ -307,7 +311,7 @@ describe('Consumers', () => {
           jest.spyOn(window, 'ga');
         });
         it('should use All as the event category if not provided in the event properties', () => {
-          Consumers.googleAnalytics.track('dog.bark');
+          BrowserConsumers.googleAnalytics.track('dog.bark', {});
           expect(window.ga).toHaveBeenCalledWith('send', {
             eventCategory: 'All',
             eventAction: 'dog.bark',
@@ -315,7 +319,7 @@ describe('Consumers', () => {
           });
         });
         it('should use the given event category on the given event properties', () => {
-          Consumers.googleAnalytics.track('cat.run', { speed: 'light', eventCategory: 'war' });
+          BrowserConsumers.googleAnalytics.track('cat.run', { speed: 'light', eventCategory: 'war' });
           expect(window.ga).toHaveBeenCalledWith('send', {
             eventCategory: 'war',
             eventAction: 'cat.run',
@@ -331,11 +335,11 @@ describe('Consumers', () => {
       });
       describe('test', () => {
         it('should return true if loaded', () => {
-          expect(Consumers.sendinblue.test()).toBeTruthy();
+          expect(BrowserConsumers.sendinblue.test()).toBeTruthy();
         });
         it('should return false if not loaded', () => {
           delete window.sendinblue;
-          expect(Consumers.sendinblue.test()).toBeFalsy();
+          expect(BrowserConsumers.sendinblue.test()).toBeFalsy();
         });
       });
       describe('identify', () => {
@@ -343,7 +347,11 @@ describe('Consumers', () => {
           jest.spyOn(sendinblue, 'identify');
         });
         it('should register the given user', () => {
-          Consumers.sendinblue.identify('mock-user-id', { userProperty: 'user property' });
+          BrowserConsumers.sendinblue.identify('mock-user-id', {});
+          expect(sendinblue.identify).toBeCalledWith('mock-user-id', {});
+        });
+        it('should register the given user with properties', () => {
+          BrowserConsumers.sendinblue.identify('mock-user-id', { userProperty: 'user property' });
           expect(sendinblue.identify).toBeCalledWith('mock-user-id', { userProperty: 'user property' });
         });
       });
@@ -352,7 +360,7 @@ describe('Consumers', () => {
           jest.spyOn(sendinblue, 'track');
         });
         it('should send given tracking data', () => {
-          Consumers.sendinblue.track('event.name', { prop: 'a prop' });
+          BrowserConsumers.sendinblue.track('event.name', { prop: 'a prop' });
           expect(sendinblue.track).toBeCalledWith('event.name', { prop: 'a prop' });
         });
       });
@@ -360,11 +368,11 @@ describe('Consumers', () => {
     describe('ga4', () => {
       describe('test', () => {
         it('should return false if ga4 is not loaded', () => {
-          expect(Consumers.ga4.test()).toBeFalsy();
+          expect(BrowserConsumers.ga4.test()).toBeFalsy();
         });
         it('should true if ga4 is loaded', () => {
           window.gtag = ga4;
-          expect(Consumers.ga4.test()).toBeTruthy();
+          expect(BrowserConsumers.ga4.test()).toBeTruthy();
         });
       });
       describe('identify', () => {
@@ -373,11 +381,11 @@ describe('Consumers', () => {
           jest.spyOn(window, 'gtag');
         });
         it('should register given user', () => {
-          Consumers.ga4.identify('user-id');
+          BrowserConsumers.ga4.identify('user-id', {});
           expect(window.gtag).toHaveBeenCalledWith('set', 'user_properties', { user_id: 'user-id' });
         });
         it('should not modify any user properties', () => {
-          Consumers.ga4.identify('user-id', { plan: 'trial' });
+          BrowserConsumers.ga4.identify('user-id', { plan: 'trial' });
           expect(window.gtag).toHaveBeenCalledWith('set', 'user_properties', { user_id: 'user-id', plan: 'trial' });
         });
       });
@@ -387,7 +395,7 @@ describe('Consumers', () => {
           jest.spyOn(window, 'gtag');
         });
         it('should send given tracking data', () => {
-          Consumers.ga4.track('event name..with_dots.spaces  and-hyphens', { prop: 'a prop' });
+          BrowserConsumers.ga4.track('event name..with_dots.spaces  and-hyphens', { prop: 'a prop' });
           expect(window.gtag).toHaveBeenCalledWith('event', 'event_name_with_dots_spaces_and_hyphens', {
             prop: 'a prop',
           });
@@ -397,11 +405,11 @@ describe('Consumers', () => {
     describe('indicative', () => {
       describe('test', () => {
         it('should return false if indicative is not loaded', () => {
-          expect(Consumers.indicative.test()).toBeFalsy();
+          expect(BrowserConsumers.indicative.test()).toBeFalsy();
         });
         it('should true if indicative is loaded', () => {
           window.Indicative = indicative;
-          expect(Consumers.indicative.test()).toBeTruthy();
+          expect(BrowserConsumers.indicative.test()).toBeTruthy();
         });
       });
       describe('identify', () => {
@@ -410,11 +418,11 @@ describe('Consumers', () => {
           jest.spyOn(indicative, 'setUniqueID');
         });
         it('should register given user', () => {
-          Consumers.indicative.identify('user-id');
+          BrowserConsumers.indicative.identify('user-id', {});
           expect(indicative.setUniqueID).toHaveBeenCalledWith('user-id', true);
         });
         it('should not modify any user properties', () => {
-          Consumers.indicative.identify('user-id', { plan: 'trial' });
+          BrowserConsumers.indicative.identify('user-id', { plan: 'trial' });
           expect(window.Indicative.setUniqueID).toHaveBeenCalledWith('user-id', true);
         });
       });
@@ -424,7 +432,7 @@ describe('Consumers', () => {
           jest.spyOn(indicative, 'buildEvent');
         });
         it('should send given tracking data', () => {
-          Consumers.indicative.track('event.name', { prop: 'a prop' });
+          BrowserConsumers.indicative.track('event.name', { prop: 'a prop' });
           expect(window.Indicative.buildEvent).toHaveBeenCalledWith('event.name', { prop: 'a prop' });
         });
       });
@@ -432,11 +440,11 @@ describe('Consumers', () => {
     describe('HyperDX', () => {
       describe('test', () => {
         it('should return false if HyperDX is not loaded', () => {
-          expect(Consumers.hyperdx.test()).toBeFalsy();
+          expect(BrowserConsumers.hyperdx.test()).toBeFalsy();
         });
         it('should true if HyperDX is loaded', () => {
           window.HyperDX = HyperDX;
-          expect(Consumers.hyperdx.test()).toBeTruthy();
+          expect(BrowserConsumers.hyperdx.test()).toBeTruthy();
         });
       });
       describe('identify', () => {
@@ -445,11 +453,11 @@ describe('Consumers', () => {
           jest.spyOn(HyperDX, 'setGlobalAttributes');
         });
         it('should register given user', () => {
-          Consumers.hyperdx.identify('user-id');
+          BrowserConsumers.hyperdx.identify('user-id', {});
           expect(HyperDX.setGlobalAttributes).toHaveBeenCalledWith({ userId: 'user-id' });
         });
         it('should not modify any user properties', () => {
-          Consumers.hyperdx.identify('user-id', { plan: 'trial' });
+          BrowserConsumers.hyperdx.identify('user-id', { plan: 'trial' });
           expect(window.HyperDX.setGlobalAttributes).toHaveBeenCalledWith({ userId: 'user-id' });
         });
       });
@@ -459,7 +467,7 @@ describe('Consumers', () => {
           jest.spyOn(HyperDX, 'addAction');
         });
         it('should send given tracking data', () => {
-          Consumers.hyperdx.track('event.name', { prop: 'a prop' });
+          BrowserConsumers.hyperdx.track('event.name', { prop: 'a prop' });
           expect(window.HyperDX.addAction).toHaveBeenCalledWith('event.name', { prop: 'a prop' });
         });
       });
